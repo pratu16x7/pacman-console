@@ -31,7 +31,7 @@ class PacmanGame:
             'width': w,
             'offset_y': h/4,
             'offset_x': w/4,
-            'bounds': [0, h/2, 0, w/2]
+            'bounds': [2, h/2 - 3, 2, w/2 + 1]
         }
 
 

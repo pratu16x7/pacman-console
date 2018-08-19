@@ -38,17 +38,16 @@ class Pacman:
         s = self.screen
 
         def up_bound_condition(coordinates):
-            return not coordinates[0] <= s.get('bounds')[0] + s.get('offset_y')
+            return not coordinates[0] <= s.get('bounds')[0]
 
         def down_bound_condition(coordinates):
-            return not coordinates[0] >= s.get('bounds')[1] + s.get('offset_y')
+            return not coordinates[0] >= s.get('bounds')[1]
 
         def left_bound_condition(coordinates):
-            return not coordinates[1] <= s.get('bounds')[2] + s.get('offset_x')
+            return not coordinates[1] <= s.get('bounds')[2]
 
         def right_bound_condition(coordinates):
-            return not coordinates[1] >= s.get('bounds')[3] + s.get('offset_x')
-
+            return not coordinates[1] >= s.get('bounds')[3]
 
         self.movements = {
             'UP': {
