@@ -1,5 +1,5 @@
 import operator
-from character_progression import CharProgression
+from .character_progression import CharProgression
 
 HORIZONTAL_STEP_SIZE = 2
 VERTICAL_STEP_SIZE = 1
@@ -113,8 +113,8 @@ class Pacman:
 
     def draw_char(self, char):
         self.game_box.addch(
-            self.current_position[0],
-            self.current_position[1],
+            int(self.current_position[0]),
+            int(self.current_position[1]),
             char
         )
 

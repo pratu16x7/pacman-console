@@ -1,4 +1,3 @@
-
 class CharProgression:
     def __init__(self, name, progression_cycle):
         self.name = name
@@ -10,10 +9,16 @@ class CharProgression:
 
     def update(self, reverse=False):
         if not reverse:
-            self.current_index += 1
-            if self.current_index >= len(self.cycle):
-                self.current_index = 0
+            self.update_forward()
         else:
-            self.current_index -= 1
-            if self.current_index <= 0:
-                self.current_index = len(self.cycle) - 1
+            self.update_reverse()
+
+    def update_forward(self):
+        self.current_index += 1
+        if self.current_index >= len(self.cycle):
+            self.current_index = 0
+
+    def update_reverse(self):
+        self.current_index -= 1
+        if self.current_index <= 0:
+            self.current_index = len(self.cycle) - 1

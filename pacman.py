@@ -29,8 +29,8 @@ class PacmanGame:
         self.screen = {
             'height': h,
             'width': w,
-            'offset_y': h/4,
-            'offset_x': w/4,
+            'offset_y': int(h/4),
+            'offset_x': int(w/4),
             'bounds': [2, h/2 - 3, 2, w/2 + 1]
         }
 
@@ -40,10 +40,10 @@ class PacmanGame:
         # self.game_box = GameBox(self.screen_obj)
 
         self.game_box = self.screen_obj.subwin(
-            s.get('height')/2 + 3,
-            s.get('width')/2 + 6,
-            s.get('offset_y') - 1,
-            s.get('offset_x') - 2
+            int(s.get('height')/2 + 3),
+            int(s.get('width')/2 + 6),
+            int(s.get('offset_y') - 1),
+            int(s.get('offset_x') - 2)
         )
         self.game_box.box()
         self.game_box.keypad(1)
