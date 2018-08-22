@@ -1,8 +1,8 @@
 import random
 import curses
 import time
-
-from character import Pacman
+from objects.character import Pacman
+from objects.game_box import GameBox
 
 
 class PacmanGame:
@@ -37,6 +37,8 @@ class PacmanGame:
 
     def init_map(self):
         s = self.screen
+        # self.game_box = GameBox(self.screen_obj)
+
         self.game_box = self.screen_obj.subwin(
             s.get('height')/2 + 3,
             s.get('width')/2 + 6,
@@ -60,10 +62,7 @@ class PacmanGame:
 
 
     def start(self):
-        s = self.screen
-
         key = curses.KEY_RIGHT
-
         while True:
             next_key = self.game_box.getch()
             key = key if next_key == -1 else next_key

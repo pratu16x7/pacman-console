@@ -80,19 +80,25 @@ class Pacman:
         self.set_position(self.get_new_position(direction))
 
 
+    def set_position(self, coordinates):
+        if hasattr(self, 'current_position'):
+            self.draw_char(' ')
+
+        self.current_position = coordinates
+        self.draw_char(self.current_progression.get_char())
+
+
     def get_new_position(self, direction):
-        coordinates = self.position[:]
+        coordinates = self.current_position[:]
 
         mover = self.movements.get(direction)
 
         if mover.get('bound_condition')(coordinates):
-            self.current_progression = self.progressions.get(direction)
-            self.current_progression.update()
+            self.update_progression(direction)
 
             index = mover.get('coord_index')
-            operation = mover.get('operation')
 
-            coordinates[index] = getattr(operator, operation)(
+            coordinates[index] = getattr(operator, mover.get('operation'))(
                 coordinates[index],
                 STEP_SIZES[index]
             )
@@ -100,19 +106,15 @@ class Pacman:
         return coordinates
 
 
-    def set_position(self, coordinates):
-        if hasattr(self, 'position'):
-            self.draw_char(' ')
-
-        self.position = coordinates
-
-        self.draw_char(self.current_progression.get_char())
+    def update_progression(self, direction):
+        self.current_progression = self.progressions.get(direction)
+        self.current_progression.update()
 
 
     def draw_char(self, char):
         self.game_box.addch(
-            self.position[0],
-            self.position[1],
+            self.current_position[0],
+            self.current_position[1],
             char
         )
 
