@@ -10,12 +10,9 @@ STEP_SIZES = [
 ]
 
 class Pacman:
-    def __init__(self, game_box, initial_position, screen):
+    def __init__(self, game_box, initial_position):
         self.game_box = game_box
-
-        # TODO: remove
-        self.screen = screen
-
+        
         self.init_progressions()
         self.init_movements()
         self.set_position(initial_position)
@@ -34,42 +31,23 @@ class Pacman:
 
     def init_movements(self):
 
-        # TODO: remove
-        s = self.screen
-
-        def up_bound_condition(coordinates):
-            return not coordinates[0] <= s.get('bounds')[0]
-
-        def down_bound_condition(coordinates):
-            return not coordinates[0] >= s.get('bounds')[1]
-
-        def left_bound_condition(coordinates):
-            return not coordinates[1] <= s.get('bounds')[2]
-
-        def right_bound_condition(coordinates):
-            return not coordinates[1] >= s.get('bounds')[3]
-
         self.movements = {
             'UP': {
-                'bound_condition': up_bound_condition,
                 'operation': 'sub',
                 'coord_index': 0
             },
 
             'DOWN': {
-                'bound_condition': down_bound_condition,
                 'operation': 'add',
                 'coord_index': 0
             },
 
             'LEFT': {
-                'bound_condition': left_bound_condition,
                 'operation': 'sub',
                 'coord_index': 1
             },
 
             'RIGHT': {
-                'bound_condition': right_bound_condition,
                 'operation': 'add',
                 'coord_index': 1
             }
@@ -89,21 +67,25 @@ class Pacman:
 
 
     def get_new_position(self, direction):
-        coordinates = self.current_position[:]
+        old_coordinates = self.current_position[:]
+
+        new_coordinates = old_coordinates[:]
 
         mover = self.movements.get(direction)
+        index = mover.get('coord_index')
+        new_coordinates[index] = getattr(operator, mover.get('operation'))(
+            new_coordinates[index],
+            STEP_SIZES[index]
+        )
 
-        if mover.get('bound_condition')(coordinates):
+        y = new_coordinates[0]
+        x = new_coordinates[1]
+
+        if self.game_box.map_matrix[y][x] != '#':
             self.update_progression(direction)
-
-            index = mover.get('coord_index')
-
-            coordinates[index] = getattr(operator, mover.get('operation'))(
-                coordinates[index],
-                STEP_SIZES[index]
-            )
-
-        return coordinates
+            return new_coordinates
+        else:
+            return old_coordinates
 
 
     def update_progression(self, direction):
@@ -112,7 +94,7 @@ class Pacman:
 
 
     def draw_char(self, char):
-        self.game_box.addch(
+        self.game_box.map_box.addch(
             int(self.current_position[0]),
             int(self.current_position[1]),
             char
