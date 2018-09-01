@@ -1,4 +1,6 @@
 import operator
+import abc
+import curses
 from .character_progression import CharProgression
 
 HORIZONTAL_STEP_SIZE = 2
@@ -9,24 +11,25 @@ STEP_SIZES = [
     HORIZONTAL_STEP_SIZE
 ]
 
-class Pacman:
+class Character:
     def __init__(self, game_box, initial_position):
         self.game_box = game_box
-        
+
+        # # TODO: COLOR!
+        # curses.start_color()
+        # curses.use_default_colors()
+        # for i in range(0, curses.COLORS):
+        #     curses.init_pair(i + 1, i, i)
+
         self.init_progressions()
         self.init_movements()
         self.set_position(initial_position)
 
 
+    @abc.abstractmethod
     def init_progressions(self):
-        self.progressions = {
-            'UP': CharProgression('UP', ['v', 'V', '|', '|', 'V']),
-            'DOWN': CharProgression('DOWN', ['^']),
-            'LEFT': CharProgression('LEFT', ['}', ')', '>', '-', '-', '>', ')', '}']),
-            'RIGHT': CharProgression('RIGHT', ['{', '(', '<', '-', '-', '<', '(', '{'])
-        }
-
-        self.current_progression = self.progressions.get('RIGHT')
+        self.progressions = {}
+        return
 
 
     def init_movements(self):
@@ -94,9 +97,32 @@ class Pacman:
 
 
     def draw_char(self, char):
-        self.game_box.map_box.addch(
+        self.game_box.map_box.addstr(
             int(self.current_position[0]),
             int(self.current_position[1]),
-            char
+            char,
+            # curses.color_pair(100)
         )
 
+class Pacman(Character):
+    def init_progressions(self):
+        self.progressions = {
+            'UP': CharProgression('UP', ['v', 'V', '|', '|', 'V']),
+            'DOWN': CharProgression('DOWN', ['^']),
+            'LEFT': CharProgression('LEFT', ['}', ')', '>', '-', '-', '>', ')', '}']),
+            'RIGHT': CharProgression('RIGHT', ['{', '(', '<', '-', '-', '<', '(', '{'])
+        }
+
+        self.current_progression = self.progressions.get('RIGHT')
+
+
+class Ghost(Character):
+    def init_progressions(self):
+        self.progressions = {
+            'UP': CharProgression('UP', ['M']),
+            'DOWN': CharProgression('DOWN', ['M']),
+            'LEFT': CharProgression('LEFT', ['M']),
+            'RIGHT': CharProgression('RIGHT', ['M'])
+        }
+
+        self.current_progression = self.progressions.get('RIGHT')

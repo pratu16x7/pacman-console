@@ -1,7 +1,7 @@
 import curses
 # import random
 # import time
-from objects.character import Pacman
+from objects.character import Pacman, Ghost
 from objects.game_box import GameBox
 
 
@@ -18,7 +18,7 @@ class PacmanGame:
         curses.curs_set(0)
         curses.noecho()
         self.screen_obj.border(0)
-        
+
 
     def init_map(self):
         self.game_box = GameBox(self.screen_obj)
@@ -29,6 +29,28 @@ class PacmanGame:
             self.game_box,
             [18, 29]
         )
+
+        self.ghosts = {
+            'Blinky': Ghost(
+                self.game_box,
+                [12, 25]
+            ),
+
+            'Pinky': Ghost(
+                self.game_box,
+                [12, 29]
+            ),
+
+            'Inky': Ghost(
+                self.game_box,
+                [12, 33]
+            ),
+
+            'Clyde': Ghost(
+                self.game_box,
+                [11, 29]
+            )
+        }
 
 
     def start(self):
