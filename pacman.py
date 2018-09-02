@@ -1,6 +1,4 @@
 import curses
-# import random
-# import time
 from objects.character import Pacman, Ghost
 from objects.game_box import GameBox
 
@@ -71,7 +69,10 @@ class PacmanGame:
             if key == curses.KEY_RIGHT:
                 self.pacman.move('RIGHT')
 
-            self.screen_obj.getch()
+            self.ghosts['Blinky'].move_in_random_direction()
+            self.ghosts['Pinky'].move_in_random_direction()
+            self.ghosts['Inky'].move_in_random_direction()
+            self.ghosts['Clyde'].move_in_random_direction()
 
 
 PacmanGame()
