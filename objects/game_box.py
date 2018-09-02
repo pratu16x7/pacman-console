@@ -1,17 +1,12 @@
 import curses
 
 class GameBox:
-    def __init__(self, screen):
+    def __init__(self, screen, colors):
         self.screen = screen
+        self.colors = colors
+
         self.init_map_matrix()
         self.init_map_box()
-
-        # # TODO: COLOR!
-        # curses.start_color()
-        # curses.use_default_colors()
-        # for i in range(0, curses.COLORS):
-        #     curses.init_pair(i + 1, i, i)
-
         self.draw_map()
 
 
@@ -48,20 +43,23 @@ class GameBox:
 
 
     def draw_map(self):
-        # curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
-
-        # black = 233
-        # blue = 22
+        color = self.colors['wall']
 
         line_index = 0
         for line in self.map_matrix:
             char_index = 0
             for char in line:
+                if char == '#':
+                    color = self.colors['wall']
+                if char == ' ':
+                    color = self.colors['space']
+                if char == '-':
+                    color = self.colors['door']
                 self.map_box.addstr(
                     line_index,
                     char_index,
                     char,
-                    # curses.color_pair(black if char == ' ' else blue)
+                    color
                 )
                 char_index += 1
             line_index += 1

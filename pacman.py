@@ -6,6 +6,7 @@ from objects.game_box import GameBox
 class PacmanGame:
     def __init__(self):
         self.init_curses_and_screen()
+        self.init_color()
         self.init_map()
         self.init_characters()
         self.start()
@@ -18,35 +19,58 @@ class PacmanGame:
         self.screen_obj.border(0)
 
 
+    def init_color(self):
+        curses.start_color()
+        curses.use_default_colors()
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1, i, -1)
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1 + 300, i, i)
+
+
     def init_map(self):
-        self.game_box = GameBox(self.screen_obj)
+        black = 233
+        blue = 22
+
+        blue_fill = 278
+
+        self.game_box = GameBox(self.screen_obj, {
+            'wall': curses.color_pair(blue_fill),
+            'door': curses.color_pair(blue),
+            'space': curses.color_pair(black)
+        })
 
 
     def init_characters(self):
         self.pacman = Pacman(
             self.game_box,
-            [18, 29]
+            [18, 29],
+            curses.color_pair(12)
         )
 
         self.ghosts = {
             'Blinky': Ghost(
                 self.game_box,
-                [12, 25]
+                [12, 25],
+                curses.color_pair(2)
             ),
 
             'Pinky': Ghost(
                 self.game_box,
-                [12, 29]
+                [12, 29],
+                curses.color_pair(14)
             ),
 
             'Inky': Ghost(
                 self.game_box,
-                [12, 33]
+                [12, 33],
+                curses.color_pair(15)
             ),
 
             'Clyde': Ghost(
                 self.game_box,
-                [11, 29]
+                [11, 29],
+                curses.color_pair(209)
             )
         }
 

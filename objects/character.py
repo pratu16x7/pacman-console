@@ -13,14 +13,9 @@ STEP_SIZES = [
 ]
 
 class Character:
-    def __init__(self, game_box, initial_position):
+    def __init__(self, game_box, initial_position, color):
         self.game_box = game_box
-
-        # # TODO: COLOR!
-        # curses.start_color()
-        # curses.use_default_colors()
-        # for i in range(0, curses.COLORS):
-        #     curses.init_pair(i + 1, i, i)
+        self.color = color
 
         self.init_directions()
         self.init_progressions()
@@ -132,7 +127,7 @@ class Character:
             int(self.current_position[0]),
             int(self.current_position[1]),
             char,
-            # curses.color_pair(100)
+            self.color
         )
 
 
