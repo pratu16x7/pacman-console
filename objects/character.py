@@ -145,9 +145,11 @@ class Pacman(Character):
 
 
 class Ghost(Character):
+    SPEED_DAMPER_LEVEL = 1
 
     def __init__(self, *args, **kwargs):
         super(Ghost, self).__init__(*args, **kwargs)
+        self.wait_flag = 0
 
 
     def init_progressions(self):
@@ -162,6 +164,12 @@ class Ghost(Character):
 
 
     def move_in_random_direction(self):
+        if self.wait_flag < self.SPEED_DAMPER_LEVEL:
+            self.wait_flag += 1
+            return
+
+        self.wait_flag = 0
+
         current_direction = self.current_progression.name
         forward_directions = self.get_all_forward_directions(current_direction)
         possible_directions = []
