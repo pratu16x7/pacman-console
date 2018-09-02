@@ -37,7 +37,8 @@ class PacmanGame:
         self.game_box = GameBox(self.screen_obj, {
             'wall': curses.color_pair(blue_fill),
             'door': curses.color_pair(blue),
-            'space': curses.color_pair(black)
+            'space': curses.color_pair(black),
+            'food': curses.color_pair(12)
         })
 
 

@@ -55,6 +55,8 @@ class GameBox:
                     color = self.colors['space']
                 if char == '-':
                     color = self.colors['door']
+                if char == '·':
+                    color = self.colors['food']
                 self.map_box.addstr(
                     line_index,
                     char_index,
