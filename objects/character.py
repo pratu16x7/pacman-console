@@ -87,6 +87,14 @@ class Character:
             STEP_SIZES[index]
         )
 
+        # Wrap position:
+        # horizontally
+        width = len(self.game_box.map_matrix[0])
+        if new_coordinates[1] < 0:
+            new_coordinates[1] = width - 3
+        if new_coordinates[1] >= width - 1:
+            new_coordinates[1] = 1
+
         y = new_coordinates[0]
         x = new_coordinates[1]
 

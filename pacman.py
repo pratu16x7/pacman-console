@@ -69,6 +69,9 @@ class PacmanGame:
             if key == curses.KEY_RIGHT:
                 self.pacman.move('RIGHT')
 
+            # TODO: find a way to wait
+            # self.screen_obj.getch()
+
             self.ghosts['Blinky'].move_in_random_direction()
             self.ghosts['Pinky'].move_in_random_direction()
             self.ghosts['Inky'].move_in_random_direction()
