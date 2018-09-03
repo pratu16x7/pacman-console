@@ -4,22 +4,16 @@ import curses
 import random
 from .character_progression import CharProgression
 
-HORIZONTAL_STEP_SIZE = 2
-VERTICAL_STEP_SIZE = 1
-
-STEP_SIZES = [
-    VERTICAL_STEP_SIZE,
-    HORIZONTAL_STEP_SIZE
-]
 
 class Character:
     def __init__(self, game_box, initial_position, color):
         self.game_box = game_box
         self.color = color
 
+        self.pass_over = False
+
         self.init_directions()
         self.init_progressions()
-        self.init_movements()
         self.set_position(initial_position)
 
 
@@ -33,76 +27,49 @@ class Character:
         return
 
 
-    def init_movements(self):
-
-        self.movements = {
-            'UP': {
-                'operation': 'sub',
-                'coord_index': 0
-            },
-
-            'DOWN': {
-                'operation': 'add',
-                'coord_index': 0
-            },
-
-            'LEFT': {
-                'operation': 'sub',
-                'coord_index': 1
-            },
-
-            'RIGHT': {
-                'operation': 'add',
-                'coord_index': 1
-            }
-        }
-
-
     def move(self, direction):
-        self.set_position(self.get_new_position(direction))
+        new_position = self.game_box.get_new_position(self.current_position, direction)
+
+        if new_position != self.current_position:
+            self.update_progression(direction)
+            self.set_position(new_position)
 
 
     def set_position(self, coordinates):
         if hasattr(self, 'current_position'):
-            self.draw_char(' ')
+            if not self.pass_over:
+                self.draw_char(' ')
+            else:
+                self.draw_char(' ', True, True)
 
         self.current_position = coordinates
-        self.draw_char(self.current_progression.get_char())
-
-
-    def get_new_position(self, direction):
-        old_coordinates = self.current_position[:]
-
-        new_coordinates = old_coordinates[:]
-
-        mover = self.movements.get(direction)
-        index = mover.get('coord_index')
-        new_coordinates[index] = getattr(operator, mover.get('operation'))(
-            new_coordinates[index],
-            STEP_SIZES[index]
-        )
-
-        # Wrap position:
-        # horizontally
-        width = len(self.game_box.map_matrix[0])
-        if new_coordinates[1] < 0:
-            new_coordinates[1] = width - 3
-        if new_coordinates[1] >= width - 1:
-            new_coordinates[1] = 1
-
-        y = new_coordinates[0]
-        x = new_coordinates[1]
-
-        if self.game_box.map_matrix[y][x] != '#':
-            self.update_progression(direction)
-            return new_coordinates
-        else:
-            return old_coordinates
+        self.draw_char(self.current_progression.get_char(), False)
 
 
     def update_progression(self, direction):
         self.current_progression = self.progressions.get(direction)
         self.current_progression.update()
+
+
+    def draw_char(self, char, update=True, redraw=False):
+        y = int(self.current_position[0])
+        x = int(self.current_position[1])
+
+        color = self.color
+
+        if redraw:
+            char = self.game_box.map_matrix[y][x]
+            color = self.game_box.color_matrix[y][x]
+
+        self.game_box.map_box.addstr(
+            y,
+            x,
+            char,
+            color
+        )
+
+        if update:
+            self.game_box.map_matrix[y][x] = char
 
 
     def get_opposite_direction(self, direction):
@@ -120,15 +87,6 @@ class Character:
         directions = self.directions[:]
         directions.remove(self.get_opposite_direction(current_direction))
         return directions
-
-
-    def draw_char(self, char):
-        self.game_box.map_box.addstr(
-            int(self.current_position[0]),
-            int(self.current_position[1]),
-            char,
-            self.color
-        )
 
 
 
@@ -153,6 +111,7 @@ class Ghost(Character):
     def __init__(self, *args, **kwargs):
         super(Ghost, self).__init__(*args, **kwargs)
         self.wait_flag = 0
+        self.pass_over = True
 
 
     def init_progressions(self):
@@ -178,7 +137,7 @@ class Ghost(Character):
         possible_directions = []
 
         for d in forward_directions:
-            if self.get_new_position(d) != self.current_position:
+            if self.game_box.get_new_position(self.current_position, d) != self.current_position:
                 possible_directions.append(d)
 
         if possible_directions:

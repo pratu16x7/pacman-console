@@ -1,4 +1,13 @@
 import curses
+import operator
+
+HORIZONTAL_STEP_SIZE = 2
+VERTICAL_STEP_SIZE = 1
+
+STEP_SIZES = [
+    VERTICAL_STEP_SIZE,
+    HORIZONTAL_STEP_SIZE
+]
 
 class GameBox:
     def __init__(self, screen, colors):
@@ -8,15 +17,19 @@ class GameBox:
         self.init_map_matrix()
         self.init_map_box()
         self.draw_map()
+        self.init_directions()
+        self.init_movements()
 
 
     def init_map_matrix(self):
         self.map_matrix = []
+        self.color_matrix = []
         # with open('../maps/map.txt') as map_file:
         with open('maps/map.txt') as map_file:
             for line in map_file:
                 # trim the new_line char
                 self.map_matrix.append(list(line)[:-1])
+                self.color_matrix.append(list(line)[:-1])
 
         # # TODO:
         # # Better checks to validate map files, to parse them seamlessly
@@ -63,6 +76,68 @@ class GameBox:
                     char,
                     color
                 )
+
+                self.color_matrix[line_index][char_index] = color
+
                 char_index += 1
             line_index += 1
 
+
+    def init_directions(self):
+        self.directions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+
+
+    def init_movements(self):
+
+        self.movements = {
+            'UP': {
+                'operation': 'sub',
+                'coord_index': 0
+            },
+
+            'DOWN': {
+                'operation': 'add',
+                'coord_index': 0
+            },
+
+            'LEFT': {
+                'operation': 'sub',
+                'coord_index': 1
+            },
+
+            'RIGHT': {
+                'operation': 'add',
+                'coord_index': 1
+            }
+        }
+
+
+    def get_new_position(self, old_coordinates, direction):
+        new_coordinates = old_coordinates[:]
+
+        mover = self.movements.get(direction)
+        index = mover.get('coord_index')
+        new_coordinates[index] = getattr(operator, mover.get('operation'))(
+            new_coordinates[index],
+            STEP_SIZES[index]
+        )
+
+        # Wrap position:
+        # horizontally
+        width = len(self.map_matrix[0])
+        if new_coordinates[1] < 0:
+            new_coordinates[1] = width - 3
+        if new_coordinates[1] >= width - 1:
+            new_coordinates[1] = 1
+
+        y = new_coordinates[0]
+        x = new_coordinates[1]
+
+        if self.map_matrix[y][x] != '#':
+            return new_coordinates
+        else:
+            return old_coordinates
+
+
+    def update_map_matrix(self, y, x, char, ):
+        pass
