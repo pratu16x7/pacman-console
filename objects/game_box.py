@@ -39,20 +39,32 @@ class GameBox:
         screen_h, screen_w = self.screen.getmaxyx()
 
         m = self.map_matrix
-        map_h, map_w = len(m), len(m[0])
+        self.map_h, self.map_w = len(m), len(m[0])
 
-        offset_y = int((screen_h - map_h)/2)
-        offset_x = int((screen_w - map_w)/2)
+        offset_y = int((screen_h - self.map_h)/2)
+        offset_x = int((screen_w - self.map_w)/2)
 
         self.map_box = self.screen.subwin(
-            map_h,
-            map_w,
+            self.map_h,
+            self.map_w,
             offset_y,
             offset_x
         )
 
         self.map_box.keypad(1)
         self.map_box.timeout(100)
+
+        self.border_box = self.screen.subwin(
+            self.map_h + 10,
+            self.map_w + 10,
+            offset_y - 5,
+            offset_x - 5
+        )
+        self.border_box.box()
+
+
+        self.update_score(0)
+        self.update_lives(3)
 
 
     def draw_map(self):
@@ -81,6 +93,16 @@ class GameBox:
 
                 char_index += 1
             line_index += 1
+
+
+    def update_score(self, score):
+        self.border_box.addstr(self.map_h + 10 - 1, 5, '[Score: {0}]'.format(score))
+        self.border_box.refresh()
+
+
+    def update_lives(self, lives):
+        self.border_box.addstr(self.map_h + 10 - 1, 20, '[Lives: {0}]'.format(lives))
+        self.border_box.refresh()
 
 
     def init_directions(self):

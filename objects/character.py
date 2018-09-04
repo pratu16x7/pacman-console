@@ -10,6 +10,8 @@ class Character:
         self.game_box = game_box
         self.color = color
 
+        self.score = 0
+
         self.pass_over = False
 
         self.init_directions()
@@ -69,6 +71,11 @@ class Character:
         )
 
         if update:
+            if not self.pass_over:
+                if self.game_box.map_matrix[y][x] == '·':
+                    self.score += 1
+                    self.game_box.update_score(self.score)
+
             self.game_box.map_matrix[y][x] = char
 
 
