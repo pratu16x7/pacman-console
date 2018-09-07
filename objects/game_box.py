@@ -96,12 +96,12 @@ class GameBox:
 
 
     def update_score(self, score):
-        self.border_box.addstr(self.map_h + 10 - 1, 5, '[Score: {0}]'.format(score))
+        self.border_box.addstr(self.map_h + 10 - 1, 5, '[ Score: {0} ]'.format(score))
         self.border_box.refresh()
 
 
     def update_lives(self, lives):
-        self.border_box.addstr(self.map_h + 10 - 1, 20, '[Lives: {0}]'.format(lives))
+        self.border_box.addstr(self.map_h + 10 - 1, 20, '[ Lives: {0} ]'.format('(<  (<  (<'))
         self.border_box.refresh()
 
 
