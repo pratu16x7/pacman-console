@@ -10,22 +10,22 @@ STEP_SIZES = [
 ]
 
 class GameBox:
-    def __init__(self, screen, colors):
+    def __init__(self, screen, map_file, colors):
         self.screen = screen
         self.colors = colors
 
-        self.init_map_matrix()
+        self.init_map_matrix(map_file)
         self.init_map_box()
         self.draw_map()
         self.init_directions()
         self.init_movements()
 
 
-    def init_map_matrix(self):
+    def init_map_matrix(self, map_file):
         self.map_matrix = []
         self.color_matrix = []
         # with open('../maps/map.txt') as map_file:
-        with open('maps/map.txt') as map_file:
+        with open(map_file) as map_file:
             for line in map_file:
                 # trim the new_line char
                 self.map_matrix.append(list(line)[:-1])
@@ -110,7 +110,6 @@ class GameBox:
 
 
     def init_movements(self):
-
         self.movements = {
             'UP': {
                 'operation': 'sub',
@@ -159,7 +158,3 @@ class GameBox:
             return new_coordinates
         else:
             return old_coordinates
-
-
-    def update_map_matrix(self, y, x, char, ):
-        pass

@@ -6,7 +6,7 @@ from .character_progression import CharProgression
 
 
 class Character:
-    def __init__(self, game_box, initial_position, color):
+    def __init__(self, game_box, color, initial_position):
         self.game_box = game_box
         self.color = color
 
@@ -110,6 +110,10 @@ class Pacman(Character):
         self.current_progression = self.progressions.get('RIGHT')
 
 
+    def die(self):
+        return
+
+
 
 
 class Ghost(Character):
@@ -151,3 +155,7 @@ class Ghost(Character):
             self.move(random.choice(possible_directions))
         else:
             self.move(self.get_opposite_direction(current_direction))
+
+
+    def vanish(self):
+        return

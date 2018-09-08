@@ -1,6 +1,10 @@
 Take care of the order of y and x (not x and y) coordinates. I messed up a lot.
 
 
+no need to do these after initscr() I guess,
+    curses.curs_set(0)
+    curses.noecho()
+    self.screen_obj.border(0)
 
 
 
