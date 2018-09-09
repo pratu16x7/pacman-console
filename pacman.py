@@ -108,9 +108,9 @@ class PacmanGame():
         for ghost in self.ghosts.values():
             ghost.respawn()
 
-        print('spawened')
+        # print('spawened')
         time.sleep(2)
-        print('slept')
+        # print('slept')
 
 
     def end(self):
@@ -124,6 +124,7 @@ class PacmanGame():
         while game_loop_running:
             next_key = self.game_box.map_box.getch()
             key = key if next_key == -1 else next_key
+            self.prev_position = self.pacman.current_position
 
             # Pacman moves
             if key == curses.KEY_UP:
@@ -137,10 +138,6 @@ class PacmanGame():
 
             if key == curses.KEY_RIGHT:
                 self.pacman.move('RIGHT')
-
-            # Ghosts move
-            for ghost in self.ghosts.values():
-                ghost.move_in_random_direction()
 
             # Check state
             if not self.pacman.stopped:
@@ -163,6 +160,10 @@ class PacmanGame():
                 else:
                     self.end()
 
+            # Ghosts move
+            for ghost in self.ghosts.values():
+                ghost.move_in_random_direction()
+
 
     def food_eaten(self):
         y, x = self.pacman.current_position
@@ -170,9 +171,8 @@ class PacmanGame():
 
 
     def ghost_touched(self):
-        # TODO: More robust: Check for collisions, touches are rare
         for ghost in self.ghosts.values():
-            if self.pacman.current_position == ghost.current_position:
+            if ghost.current_position in [self.pacman.current_position, self.prev_position]:
                 return True
         return False
 

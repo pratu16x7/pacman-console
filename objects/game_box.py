@@ -101,7 +101,7 @@ class GameBox:
 
     def update_lives(self, lives):
         lives_str = '(< ' * lives
-        self.border_box.addstr(self.map_h + 10 - 1, 25, '[ Lives: {0}]──────────'.format(lives_str))
+        self.border_box.addstr(self.map_h + 10 - 1, 25, '[ {0}]──────────'.format(lives_str))
         self.border_box.refresh()
 
 
