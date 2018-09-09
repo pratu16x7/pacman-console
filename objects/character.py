@@ -5,14 +5,13 @@ import random
 from .character_progression import CharProgression
 
 
-class Character:
+class Character():
     def __init__(self, game_box, color, initial_position):
         self.game_box = game_box
         self.color = color
 
-        self.score = 0
-
         self.pass_over = False
+        self.stopped = False
 
         self.init_directions()
         self.init_progressions()
@@ -33,8 +32,11 @@ class Character:
         new_position = self.game_box.get_new_position(self.current_position, direction)
 
         if new_position != self.current_position:
+            self.stopped = False
             self.update_progression(direction)
             self.set_position(new_position)
+        else:
+            self.stopped = True
 
 
     def set_position(self, coordinates):
@@ -54,8 +56,7 @@ class Character:
 
 
     def draw_char(self, char, update=True, redraw=False):
-        y = int(self.current_position[0])
-        x = int(self.current_position[1])
+        y, x = self.current_position
 
         color = self.color
 
@@ -71,11 +72,6 @@ class Character:
         )
 
         if update:
-            if not self.pass_over:
-                if self.game_box.map_matrix[y][x] == '·':
-                    self.score += 1
-                    self.game_box.update_score(self.score)
-
             self.game_box.map_matrix[y][x] = char
 
 

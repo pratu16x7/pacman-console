@@ -1,19 +1,19 @@
 class Color:
     def __init__(self, curses):
-        self.curses = curses
-        self.init_curses_color_pairs()
+        self.init_curses_color_pairs(curses)
         self.define_colors()
-        self.set_color_properties()
+        self.set_color_properties(curses)
 
 
-    def init_curses_color_pairs(self):
-        self.curses.initscr()
-        self.curses.start_color()
-        self.curses.use_default_colors()
-        for i in range(0, self.curses.COLORS):
-            self.curses.init_pair(i + 1, i, -1)
-        for i in range(0, self.curses.COLORS):
-            self.curses.init_pair(i + 1 + 300, i, i)
+    def init_curses_color_pairs(self, curses):
+        curses.initscr()
+        curses.start_color()
+        curses.use_default_colors()
+
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1, i, -1)
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1 + 300, i, i)
 
 
     def define_colors(self):
@@ -29,6 +29,6 @@ class Color:
         }
 
 
-    def set_color_properties(self):
+    def set_color_properties(self, curses):
         for key, value in self.color_values.items():
-            setattr(self, key, self.curses.color_pair(value))
+            setattr(self, key, curses.color_pair(value))

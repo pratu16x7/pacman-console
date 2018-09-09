@@ -62,7 +62,6 @@ class GameBox:
         )
         self.border_box.box()
 
-
         self.update_score(0)
         self.update_lives(3)
 
@@ -74,7 +73,7 @@ class GameBox:
         for line in self.map_matrix:
             char_index = 0
             for char in line:
-                if char == '#':
+                if char == '█':
                     color = self.colors['wall']
                 if char == ' ':
                     color = self.colors['space']
@@ -151,10 +150,9 @@ class GameBox:
         if new_coordinates[1] >= width - 1:
             new_coordinates[1] = 1
 
-        y = new_coordinates[0]
-        x = new_coordinates[1]
+        y, x = new_coordinates
 
-        if self.map_matrix[y][x] != '#':
+        if self.map_matrix[y][x] != '█':
             return new_coordinates
         else:
             return old_coordinates

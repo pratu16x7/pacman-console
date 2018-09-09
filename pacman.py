@@ -14,16 +14,16 @@ DATA = {
     }
 }
 
-
-class PacmanGame:
+class PacmanGame():
     def __init__(self):
         self.screen_obj = curses.initscr()
         self.init_map()
         self.init_characters()
-        self.start()
 
         self.lives = 3
         self.score = 0
+
+        self.start()
 
 
     def init_map(self):
@@ -31,7 +31,7 @@ class PacmanGame:
             self.screen_obj,
             DATA['map_file'],
             {
-                'wall': COLOR.blue_fill,
+                'wall': COLOR.blue,
                 'door': COLOR.blue,
                 'space': COLOR.black,
                 'food': COLOR.yellow
@@ -93,6 +93,7 @@ class PacmanGame:
             next_key = self.game_box.map_box.getch()
             key = key if next_key == -1 else next_key
 
+            # Pacman moves
             if key == curses.KEY_UP:
                 self.pacman.move('UP')
 
@@ -105,30 +106,50 @@ class PacmanGame:
             if key == curses.KEY_RIGHT:
                 self.pacman.move('RIGHT')
 
-            self.ghosts['Blinky'].move_in_random_direction()
-            self.ghosts['Pinky'].move_in_random_direction()
-            self.ghosts['Inky'].move_in_random_direction()
-            self.ghosts['Clyde'].move_in_random_direction()
+            # Ghosts move
+            for ghost in self.ghosts.values():
+                ghost.move_in_random_direction()
 
-            # if self.ghost_touched():
-            #     game_loop_running = False
-            #     self.kill_pacman()
+            self.check_touches()
 
-            #     if self.lives > 0:
-            #         self.restart()
-            #     else:
-            #         self.end_game()
+
+    def check_touches(self):
+        if not self.pacman.stopped:
+            if self.food_eaten():
+                self.increment_score('food')
+
+        # if self.ghost_touched():
+        #     game_loop_running = False
+        #     self.kill_pacman()
+
+        #     if self.lives > 0:
+        #         self.restart()
+        #     else:
+        #         self.end_game()
+
+
+    def food_eaten(self):
+        y, x = self.pacman.current_position
+        return self.game_box.map_matrix[y][x] == '·'
+
+
+    def ghost_touched(self):
+        for ghost in self.ghosts.values():
+            if self.pacman.current_position == ghost.current_position:
+                return True
+        return False
+
+
+    def increment_score(self, score_type):
+        score_values = {
+            'food': 10
+        }
+        self.score += score_values[score_type]
+        self.game_box.update_score(self.score)
 
 
     def reset_positions(self):
         return
-
-
-    def ghost_touched(self):
-            for ghost in self.ghosts.values():
-                if self.pacman.current_position == ghost.current_position:
-                    return True
-            return False
 
 
     def kill_pacman(self):
@@ -136,7 +157,7 @@ class PacmanGame:
         self.pacman.die()
         for ghost in self.ghosts.values():
             ghost.vanish()
-        self.pacman
+        # self.pacman
 
 
     def end_game(self):
