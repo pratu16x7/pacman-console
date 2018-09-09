@@ -77,7 +77,6 @@ class GameBox:
         for line in self.map_matrix:
             char_index = 0
             for char in line:
-                # TODO: cleanup key value access
                 if char == self.chars['wall']:
                     color = self.colors['wall']
                 if char == self.chars['space']:

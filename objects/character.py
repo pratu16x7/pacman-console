@@ -32,6 +32,13 @@ class Character():
         self.draw_char(' ', False)
 
 
+    def toggle(self, show=True):
+        if show:
+            self.appear()
+        else:
+            self.vanish()
+
+
     def move(self, direction):
         new_position = self.game_box.get_new_position(self.current_position, direction)
 
@@ -94,6 +101,11 @@ class Pacman(Character):
 
 
     def die(self):
+        self.appear()
+        for char in ['O', 'o', '.', "'", '*', ' ']:
+            time.sleep(0.2)
+            self.draw_char(char, False)
+            self.game_box.map_box.refresh()
         self.vanish()
 
 

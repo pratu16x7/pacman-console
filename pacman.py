@@ -32,6 +32,7 @@ FOOD_SCORE = 10
 class PacmanGame():
     def __init__(self):
         self.screen_obj = curses.initscr()
+        curses.curs_set(0)
         curses.noecho()
 
         self.init_map()
@@ -43,7 +44,6 @@ class PacmanGame():
             self.screen_obj,
             DATA['map_file'],
             DATA['map_chars'],
-            # TODO: cleanup config
             {
                 'wall': COLOR.blue,
                 'door': COLOR.blue,
@@ -100,7 +100,7 @@ class PacmanGame():
         self.game_box.update_lives(self.lives)
 
         self.food_count = self.game_box.food_count
-        self.food_count -= 1    # Initial position food
+        self.food_count -= 1    # Initial position over food
 
         self.init_characters()
         self.run_game_loop()
@@ -113,14 +113,13 @@ class PacmanGame():
 
 
     def standby(self):
+        time.sleep(1)
+
         self.pacman.respawn()
         for ghost in self.ghosts.values():
             ghost.respawn()
 
-        # TODO: die state
-        # print('spawened')
-        time.sleep(2)
-        # print('slept')
+        self.blink_characters()
 
 
     def win(self):
@@ -140,18 +139,9 @@ class PacmanGame():
             key = key if next_key == -1 else next_key
             self.prev_position = self.pacman.current_position
 
-            # Pacman moves
-            if key == curses.KEY_UP:
-                self.pacman.move('UP')
-
-            if key == curses.KEY_DOWN:
-                self.pacman.move('DOWN')
-
-            if key == curses.KEY_LEFT:
-                self.pacman.move('LEFT')
-
-            if key == curses.KEY_RIGHT:
-                self.pacman.move('RIGHT')
+            # Ghosts move
+            for ghost in self.ghosts.values():
+                ghost.move_in_random_direction()
 
             # Check state
             if not self.pacman.stopped:
@@ -166,20 +156,31 @@ class PacmanGame():
 
             if self.ghost_touched():
                 game_loop_running = False
-                time.sleep(1)
-
-                self.die()
                 for ghost in self.ghosts.values():
                     ghost.vanish()
+
+                self.die()
+
+                self.game_box.map_box.refresh()
 
                 if self.lives >= 0:
                     self.restart()
                 else:
                     self.end()
 
-            # Ghosts move
-            for ghost in self.ghosts.values():
-                ghost.move_in_random_direction()
+            # Pacman moves
+            if key == curses.KEY_UP:
+                self.pacman.move('UP')
+
+            if key == curses.KEY_DOWN:
+                self.pacman.move('DOWN')
+
+            if key == curses.KEY_LEFT:
+                self.pacman.move('LEFT')
+
+            if key == curses.KEY_RIGHT:
+                self.pacman.move('RIGHT')
+
 
 
     def die(self):
@@ -204,6 +205,18 @@ class PacmanGame():
 
         for idx, ghost in enumerate(self.ghosts.values()):
             ghost.set_position(ghost_pos[idx])
+
+
+    def blink_characters(self):
+        show = False
+        for i in range(4):
+            time.sleep(0.5)
+            self.pacman.toggle(show)
+            for ghost in self.ghosts.values():
+                ghost.toggle(show)
+            self.game_box.map_box.refresh()
+            
+            show = not show
 
 
     def food_eaten(self):
