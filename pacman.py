@@ -11,6 +11,12 @@ COLOR = Color(curses)
 # The only things configurable are the map (walls + food) and object postions
 DATA = {
     'map_file': 'maps/map.txt',
+    'map_chars': {
+        'wall': '█',
+        'door': '-',
+        'space': ' ',
+        'food': '·'
+    },
     'character_positions': {
         'pacman': [18, 29],
         'ghosts': [[12, 25], [12, 29], [12, 33], [11, 29]]
@@ -34,6 +40,8 @@ class PacmanGame():
         self.game_box = GameBox(
             self.screen_obj,
             DATA['map_file'],
+            DATA['map_chars'],
+            # TODO: cleanup config
             {
                 'wall': COLOR.blue,
                 'door': COLOR.blue,
@@ -44,6 +52,8 @@ class PacmanGame():
 
         self.game_box.update_score(self.score)
         self.game_box.update_lives(self.lives)
+
+        # self.food_count =
 
 
     def init_characters(self):
@@ -156,7 +166,7 @@ class PacmanGame():
 
     def food_eaten(self):
         y, x = self.pacman.current_position
-        return self.game_box.map_matrix[y][x] == '·'
+        return self.game_box.map_matrix[y][x] == DATA['map_chars']['food']
 
 
     def ghost_touched(self):

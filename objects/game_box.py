@@ -12,8 +12,9 @@ STEP_SIZES = [
 ]
 
 class GameBox:
-    def __init__(self, screen, map_file, colors):
+    def __init__(self, screen, map_file, chars, colors):
         self.screen = screen
+        self.chars = chars
         self.colors = colors
 
         self.init_map_matrix(map_file)
@@ -33,8 +34,7 @@ class GameBox:
                 self.map_matrix.append(list(line)[:-1])
                 self.color_matrix.append(list(line)[:-1])
 
-        # # TODO:
-        # # Better checks to validate map files, to parse them seamlessly
+        # TODO: Better checks to validate map files, to parse them seamlessly
 
 
     def init_map_box(self):
@@ -72,13 +72,14 @@ class GameBox:
         for line in self.map_matrix:
             char_index = 0
             for char in line:
-                if char == '█':
+                # TODO: cleanup key value access
+                if char == self.chars['wall']:
                     color = self.colors['wall']
-                if char == ' ':
+                if char == self.chars['space']:
                     color = self.colors['space']
-                if char == '-':
+                if char == self.chars['door']:
                     color = self.colors['door']
-                if char == '·':
+                if char == self.chars['food']:
                     color = self.colors['food']
                 self.map_box.addstr(
                     line_index,
@@ -170,7 +171,7 @@ class GameBox:
 
         y, x = new_coordinates
 
-        if self.map_matrix[y][x] != '█':
+        if self.map_matrix[y][x] != self.chars['wall']:
             return new_coordinates
         else:
             return old_coordinates
