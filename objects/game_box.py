@@ -17,17 +17,19 @@ class GameBox:
         self.chars = chars
         self.colors = colors
 
-        self.init_map_matrix(map_file)
+        self.map_file = map_file
+
+        self.set_map_matrix()
         self.init_map_box()
         self.init_directions()
         self.init_movements()
 
 
-    def init_map_matrix(self, map_file):
+    def set_map_matrix(self):
         self.map_matrix = []
         self.color_matrix = []
         # with open('../maps/map.txt') as map_file:
-        with open(map_file) as map_file:
+        with open(self.map_file) as map_file:
             for line in map_file:
                 # trim the new_line char
                 self.map_matrix.append(list(line)[:-1])

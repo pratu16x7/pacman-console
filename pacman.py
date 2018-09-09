@@ -8,6 +8,7 @@ from objects.color import Color
 
 COLOR = Color(curses)
 
+
 # The only things configurable are the map (walls + food) and object postions
 DATA = {
     'map_file': 'maps/map.txt',
@@ -20,16 +21,18 @@ DATA = {
     'character_positions': {
         'pacman': [18, 29],
         'ghosts': [[12, 25], [12, 29], [12, 33], [11, 29]]
-    }
+    },
 }
+
+
+LIVES = 3
+FOOD_SCORE = 10
+
 
 class PacmanGame():
     def __init__(self):
         self.screen_obj = curses.initscr()
         curses.noecho()
-
-        self.lives = 3
-        self.score = 0
 
         self.init_map()
         self.show_start_screen()
@@ -87,7 +90,11 @@ class PacmanGame():
         }
 
 
-    def start(self):
+    def start_new_game(self):
+        self.lives = LIVES
+        self.score = 0
+
+        self.game_box.set_map_matrix()
         self.game_box.draw_map()
         self.game_box.update_score(self.score)
         self.game_box.update_lives(self.lives)
@@ -110,13 +117,14 @@ class PacmanGame():
         for ghost in self.ghosts.values():
             ghost.respawn()
 
+        # TODO: die state
         # print('spawened')
         time.sleep(2)
         # print('slept')
 
 
     def end(self):
-        return
+        self.show_game_over_screen()
 
 
     def run_game_loop(self):
@@ -148,6 +156,7 @@ class PacmanGame():
 
             if self.ghost_touched():
                 game_loop_running = False
+                time.sleep(1)
 
                 self.die()
                 for ghost in self.ghosts.values():
@@ -171,7 +180,7 @@ class PacmanGame():
 
     def increment_score(self, score_type):
         score_values = {
-            'food': 10
+            'food': FOOD_SCORE
         }
         self.score += score_values[score_type]
         self.game_box.update_score(self.score)
@@ -205,10 +214,9 @@ class PacmanGame():
         mesg_line = '|                 Press any key to START                  |'
         blank_line = '|                                                         |'
 
-
-        with open('screens/start.txt') as map_file:
+        with open('screens/start.txt') as screen:
             line_index = 0
-            for line in map_file:
+            for line in screen:
                 if 'Press' in line:
                     blink_line_index = line_index
                 self.game_box.map_box.addstr(
@@ -235,8 +243,62 @@ class PacmanGame():
             show_msg = not show_msg
             if next_key != -1:
                 start_screen_running = False
-                self.start()
+                self.start_new_game()
             time.sleep(0.5)
+
+
+    # def show_win_screen(self):
+    ##    with open('screens/win.txt') as screen:
+    #         line_index = 7
+    #         for line in screen:
+    #             # if 'SCORE: 0000' in line:
+    #             #     blink_line_index = line_index
+    #             self.game_box.map_box.addstr(
+    #                 line_index,
+    #                 0,
+    #                 line,
+    ##                COLOR.yellow
+    #             )
+    #             line_index += 1
+
+    #     self.game_box.border_box.refresh()
+    #     win_screen_running = True
+
+    #     while win_screen_running:
+    #         next_key = self.game_box.map_box.getch()
+    #         if next_key != -1:
+    #             win_screen_running = False
+    #             curses.endwin()
+    #             exit()
+
+
+    def show_game_over_screen(self):
+        with open('screens/game_over.txt') as screen:
+            line_index = 7
+            for line in screen:
+                if 'SCORE: 0000' in line:
+                    line = line.replace('SCORE: 0000', 'SCORE: ' + str(self.score).zfill(4))
+                self.game_box.map_box.addstr(
+                    line_index,
+                    0,
+                    line,
+                    COLOR.orange
+                )
+                line_index += 1
+
+        self.game_box.border_box.refresh()
+        game_over_screen_running = True
+
+        while game_over_screen_running:
+            next_key = self.game_box.map_box.getch()
+            if next_key != -1:
+                game_over_screen_running = False
+
+                if next_key == 27:
+                    curses.endwin()
+                    exit()
+                else:
+                    self.start_new_game()
 
 
 PacmanGame()
