@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import curses
 import operator
 
@@ -44,7 +46,7 @@ class GameBox:
         offset_y = int((screen_h - self.map_h)/2)
         offset_x = int((screen_w - self.map_w)/2)
 
-        self.map_box = self.screen.subwin(
+        self.map_box = self.screen.derwin(
             self.map_h,
             self.map_w,
             offset_y,
@@ -54,7 +56,7 @@ class GameBox:
         self.map_box.keypad(1)
         self.map_box.timeout(100)
 
-        self.border_box = self.screen.subwin(
+        self.border_box = self.screen.derwin(
             self.map_h + 10,
             self.map_w + 10,
             offset_y - 5,
@@ -154,13 +156,14 @@ class GameBox:
 
         mover = self.movements.get(direction)
         index = mover.get('coord_index')
-        new_coordinates[index] = getattr(operator, mover.get('operation'))(
+        operation = getattr(operator, mover.get('operation'))
+
+        new_coordinates[index] = operation(
             new_coordinates[index],
             STEP_SIZES[index]
         )
 
-        # Wrap position:
-        # horizontally
+        # Wrap position horizontally
         width = len(self.map_matrix[0])
         if new_coordinates[1] < 0:
             new_coordinates[1] = width - 3
