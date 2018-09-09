@@ -1,10 +1,11 @@
 import abc
 import random
+import time
 from .character_progression import CharProgression
 
 
 class Character():
-    def __init__(self, game_box, color, initial_position):
+    def __init__(self, game_box, color, initial_position=None):
         self.game_box = game_box
         self.color = color
 
@@ -12,13 +13,23 @@ class Character():
         self.stopped = False
 
         self.init_progressions()
-        self.set_position(initial_position)
+
+        if initial_position:
+            self.set_position(initial_position)
 
 
     @abc.abstractmethod
     def init_progressions(self):
         self.progressions = {}
         return
+
+
+    def appear(self):
+        self.draw_char(self.current_progression.get_char(), False)
+
+
+    def vanish(self):
+        self.draw_char(' ', False)
 
 
     def move(self, direction):
@@ -73,7 +84,7 @@ class Character():
 class Pacman(Character):
     def init_progressions(self):
         self.progressions = {
-            'UP': CharProgression('UP', ['v', 'V', '|', '|', 'V']),
+            'UP': CharProgression('UP', ['v', 'V', '|', '|', 'V', 'v']),
             'DOWN': CharProgression('DOWN', ['^']),
             'LEFT': CharProgression('LEFT', ['}', ')', '>', '-', '-', '>', ')', '}']),
             'RIGHT': CharProgression('RIGHT', ['{', '(', '<', '-', '-', '<', '(', '{'])
@@ -83,7 +94,11 @@ class Pacman(Character):
 
 
     def die(self):
-        return
+        self.vanish()
+
+
+    def respawn(self):
+        self.appear()
 
 
 
@@ -93,8 +108,8 @@ class Ghost(Character):
 
     def __init__(self, *args, **kwargs):
         super(Ghost, self).__init__(*args, **kwargs)
-        self.wait_flag = 0
         self.pass_over = True
+        self.wait_flag = 0
 
 
     def init_progressions(self):
@@ -131,5 +146,5 @@ class Ghost(Character):
             self.move(box.get_opposite_direction(current_direction))
 
 
-    def vanish(self):
-        return
+    def respawn(self):
+        self.appear()

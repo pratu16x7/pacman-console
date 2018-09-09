@@ -1,4 +1,7 @@
+# coding: utf-8
+
 import curses
+import time
 from objects.character import Pacman, Ghost
 from objects.game_box import GameBox
 from objects.color import Color
@@ -17,11 +20,12 @@ DATA = {
 class PacmanGame():
     def __init__(self):
         self.screen_obj = curses.initscr()
-        self.init_map()
-        self.init_characters()
 
         self.lives = 3
         self.score = 0
+
+        self.init_map()
+        self.init_characters()
 
         self.start()
 
@@ -37,6 +41,9 @@ class PacmanGame():
                 'food': COLOR.yellow
             }
         )
+
+        self.game_box.update_score(self.score)
+        self.game_box.update_lives(self.lives)
 
 
     def init_characters(self):
@@ -82,11 +89,18 @@ class PacmanGame():
 
     def restart(self):
         self.reset_positions()
+        self.standby()
         self.run_game_loop()
 
 
     def standby(self):
-        return
+        self.pacman.respawn()
+        for ghost in self.ghosts.values():
+            ghost.respawn()
+
+        print('spawened')
+        time.sleep(2)
+        print('slept')
 
 
     def end(self):
@@ -118,18 +132,27 @@ class PacmanGame():
             for ghost in self.ghosts.values():
                 ghost.move_in_random_direction()
 
+            # Check state
             if not self.pacman.stopped:
                 if self.food_eaten():
                     self.increment_score('food')
 
             if self.ghost_touched():
                 game_loop_running = False
-                self.kill_pacman()
 
-                # if self.lives > 0:
-                #     self.restart()
-                # else:
-                #     self.end()
+                self.lives -= 1
+                self.game_box.update_lives(self.lives)
+
+                self.pacman.die()
+
+                for ghost in self.ghosts.values():
+                    ghost.vanish()
+
+                if self.lives >= 0:
+                    self.restart()
+                else:
+                    self.end()
+
 
     def food_eaten(self):
         y, x = self.pacman.current_position
@@ -137,6 +160,7 @@ class PacmanGame():
 
 
     def ghost_touched(self):
+        # TODO: More robust: Check for collisions, touches are rare
         for ghost in self.ghosts.values():
             if self.pacman.current_position == ghost.current_position:
                 return True
@@ -152,15 +176,13 @@ class PacmanGame():
 
 
     def reset_positions(self):
-        return
+        positions = DATA['character_positions']
+        ghost_pos = positions['ghosts']
 
+        self.pacman.set_position(positions['pacman'])
 
-    def kill_pacman(self):
-        self.lives -= 1
-        self.pacman.die()
-        for ghost in self.ghosts.values():
-            ghost.vanish()
-        # self.pacman
+        for idx, ghost in enumerate(self.ghosts.values()):
+            ghost.set_position(ghost_pos[idx])
 
 
 PacmanGame()

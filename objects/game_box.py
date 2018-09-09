@@ -64,9 +64,6 @@ class GameBox:
         )
         self.border_box.box()
 
-        self.update_score(0)
-        self.update_lives(3)
-
 
     def draw_map(self):
         color = self.colors['wall']
@@ -102,7 +99,8 @@ class GameBox:
 
 
     def update_lives(self, lives):
-        self.border_box.addstr(self.map_h + 10 - 1, 20, '[ Lives: {0} ]'.format('(<  (<  (<'))
+        lives_str = '(< ' * lives
+        self.border_box.addstr(self.map_h + 10 - 1, 25, '[ Lives: {0}]──────────'.format(lives_str))
         self.border_box.refresh()
 
 
