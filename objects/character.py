@@ -1,6 +1,4 @@
-import operator
 import abc
-import curses
 import random
 from .character_progression import CharProgression
 
@@ -13,13 +11,8 @@ class Character():
         self.pass_over = False
         self.stopped = False
 
-        self.init_directions()
         self.init_progressions()
         self.set_position(initial_position)
-
-
-    def init_directions(self):
-        self.directions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
 
 
     @abc.abstractmethod
@@ -75,23 +68,6 @@ class Character():
             self.game_box.map_matrix[y][x] = char
 
 
-    def get_opposite_direction(self, direction):
-        opposite_direction = {
-            'UP': 'DOWN',
-            'DOWN': 'UP',
-            'LEFT': 'RIGHT',
-            'RIGHT': 'LEFT'
-        }
-
-        return opposite_direction[direction]
-
-
-    def get_all_forward_directions(self, current_direction):
-        directions = self.directions[:]
-        directions.remove(self.get_opposite_direction(current_direction))
-        return directions
-
-
 
 
 class Pacman(Character):
@@ -139,18 +115,20 @@ class Ghost(Character):
 
         self.wait_flag = 0
 
+        box = self.game_box
+
         current_direction = self.current_progression.name
-        forward_directions = self.get_all_forward_directions(current_direction)
+        forward_directions = box.get_all_forward_directions(current_direction)
         possible_directions = []
 
         for d in forward_directions:
-            if self.game_box.get_new_position(self.current_position, d) != self.current_position:
+            if box.get_new_position(self.current_position, d) != self.current_position:
                 possible_directions.append(d)
 
         if possible_directions:
             self.move(random.choice(possible_directions))
         else:
-            self.move(self.get_opposite_direction(current_direction))
+            self.move(box.get_opposite_direction(current_direction))
 
 
     def vanish(self):

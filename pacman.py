@@ -5,7 +5,7 @@ from objects.color import Color
 
 COLOR = Color(curses)
 
-# The only things configurable are the map and object postions
+# The only things configurable are the map (walls + food) and object postions
 DATA = {
     'map_file': 'maps/map.txt',
     'character_positions': {
@@ -85,6 +85,14 @@ class PacmanGame():
         self.run_game_loop()
 
 
+    def standby(self):
+        return
+
+
+    def end(self):
+        return
+
+
     def run_game_loop(self):
         game_loop_running = True
         key = curses.KEY_RIGHT
@@ -110,23 +118,18 @@ class PacmanGame():
             for ghost in self.ghosts.values():
                 ghost.move_in_random_direction()
 
-            self.check_touches()
+            if not self.pacman.stopped:
+                if self.food_eaten():
+                    self.increment_score('food')
 
+            if self.ghost_touched():
+                game_loop_running = False
+                self.kill_pacman()
 
-    def check_touches(self):
-        if not self.pacman.stopped:
-            if self.food_eaten():
-                self.increment_score('food')
-
-        # if self.ghost_touched():
-        #     game_loop_running = False
-        #     self.kill_pacman()
-
-        #     if self.lives > 0:
-        #         self.restart()
-        #     else:
-        #         self.end_game()
-
+                # if self.lives > 0:
+                #     self.restart()
+                # else:
+                #     self.end()
 
     def food_eaten(self):
         y, x = self.pacman.current_position
@@ -158,11 +161,6 @@ class PacmanGame():
         for ghost in self.ghosts.values():
             ghost.vanish()
         # self.pacman
-
-
-    def end_game(self):
-
-        return
 
 
 PacmanGame()

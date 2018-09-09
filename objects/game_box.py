@@ -132,6 +132,23 @@ class GameBox:
         }
 
 
+    def get_opposite_direction(self, direction):
+        opposite_direction = {
+            'UP': 'DOWN',
+            'DOWN': 'UP',
+            'LEFT': 'RIGHT',
+            'RIGHT': 'LEFT'
+        }
+
+        return opposite_direction[direction]
+
+
+    def get_all_forward_directions(self, current_direction):
+        directions = self.directions[:]
+        directions.remove(self.get_opposite_direction(current_direction))
+        return directions
+
+
     def get_new_position(self, old_coordinates, direction):
         new_coordinates = old_coordinates[:]
 
