@@ -19,6 +19,8 @@ class GameBox:
 
         self.map_file = map_file
 
+        self.food_count = 0
+
         self.set_map_matrix()
         self.init_map_box()
         self.init_directions()
@@ -68,6 +70,7 @@ class GameBox:
 
     # To be called explicitly
     def draw_map(self):
+        self.food_count = 0
         color = self.colors['wall']
 
         line_index = 0
@@ -83,6 +86,7 @@ class GameBox:
                     color = self.colors['door']
                 if char == self.chars['food']:
                     color = self.colors['food']
+                    self.food_count += 1
                 self.map_box.addstr(
                     line_index,
                     char_index,
@@ -102,7 +106,7 @@ class GameBox:
 
 
     def update_lives(self, lives):
-        lives_str = '(< ' * lives
+        lives_str = str('(< ' * lives).ljust(9)
         self.border_box.addstr(self.map_h + 10 - 1, 25, '[ {0}]──────────'.format(lives_str))
         self.border_box.refresh()
 

@@ -99,10 +99,10 @@ class PacmanGame():
         self.game_box.update_score(self.score)
         self.game_box.update_lives(self.lives)
 
-        # self.food_count =
+        self.food_count = self.game_box.food_count
+        self.food_count -= 1    # Initial position food
 
         self.init_characters()
-
         self.run_game_loop()
 
 
@@ -121,6 +121,10 @@ class PacmanGame():
         # print('spawened')
         time.sleep(2)
         # print('slept')
+
+
+    def win(self):
+        self.show_win_screen()
 
 
     def end(self):
@@ -152,7 +156,13 @@ class PacmanGame():
             # Check state
             if not self.pacman.stopped:
                 if self.food_eaten():
+                    self.food_count -= 1
                     self.increment_score('food')
+
+                    if self.food_count <= 0:
+                        game_loop_running = False
+                        time.sleep(1)
+                        self.win()
 
             if self.ghost_touched():
                 game_loop_running = False
@@ -247,43 +257,21 @@ class PacmanGame():
             time.sleep(0.5)
 
 
-    # def show_win_screen(self):
-    ##    with open('screens/win.txt') as screen:
-    #         line_index = 7
-    #         for line in screen:
-    #             # if 'SCORE: 0000' in line:
-    #             #     blink_line_index = line_index
-    #             self.game_box.map_box.addstr(
-    #                 line_index,
-    #                 0,
-    #                 line,
-    ##                COLOR.yellow
-    #             )
-    #             line_index += 1
-
-    #     self.game_box.border_box.refresh()
-    #     win_screen_running = True
-
-    #     while win_screen_running:
-    #         next_key = self.game_box.map_box.getch()
-    #         if next_key != -1:
-    #             win_screen_running = False
-    #             curses.endwin()
-    #             exit()
+    def show_win_screen(self):
+        self.show_end_screen('screens/win.txt', COLOR.yellow)
 
 
     def show_game_over_screen(self):
-        with open('screens/game_over.txt') as screen:
+        self.show_end_screen('screens/game_over.txt', COLOR.orange)
+
+
+    def show_end_screen(self, filename, color):
+        with open(filename) as screen:
             line_index = 7
             for line in screen:
                 if 'SCORE: 0000' in line:
                     line = line.replace('SCORE: 0000', 'SCORE: ' + str(self.score).zfill(4))
-                self.game_box.map_box.addstr(
-                    line_index,
-                    0,
-                    line,
-                    COLOR.orange
-                )
+                self.game_box.map_box.addstr(line_index, 0, line, color)
                 line_index += 1
 
         self.game_box.border_box.refresh()
