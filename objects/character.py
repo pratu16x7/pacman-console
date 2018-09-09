@@ -123,7 +123,7 @@ class Ghost(Character):
         self.current_progression = self.progressions.get('RIGHT')
 
 
-    def move_in_random_direction(self):
+    def move_in_random_direction(self, bias=None):
         if self.wait_flag < self.SPEED_DAMPER_LEVEL:
             self.wait_flag += 1
             return

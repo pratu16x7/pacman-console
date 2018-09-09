@@ -26,14 +26,13 @@ DATA = {
 class PacmanGame():
     def __init__(self):
         self.screen_obj = curses.initscr()
+        curses.noecho()
 
         self.lives = 3
         self.score = 0
 
         self.init_map()
-        self.init_characters()
-
-        self.start()
+        self.show_start_screen()
 
 
     def init_map(self):
@@ -49,11 +48,6 @@ class PacmanGame():
                 'food': COLOR.yellow
             }
         )
-
-        self.game_box.update_score(self.score)
-        self.game_box.update_lives(self.lives)
-
-        # self.food_count =
 
 
     def init_characters(self):
@@ -94,6 +88,14 @@ class PacmanGame():
 
 
     def start(self):
+        self.game_box.draw_map()
+        self.game_box.update_score(self.score)
+        self.game_box.update_lives(self.lives)
+
+        # self.food_count =
+
+        self.init_characters()
+
         self.run_game_loop()
 
 
@@ -147,11 +149,7 @@ class PacmanGame():
             if self.ghost_touched():
                 game_loop_running = False
 
-                self.lives -= 1
-                self.game_box.update_lives(self.lives)
-
-                self.pacman.die()
-
+                self.die()
                 for ghost in self.ghosts.values():
                     ghost.vanish()
 
@@ -165,16 +163,10 @@ class PacmanGame():
                 ghost.move_in_random_direction()
 
 
-    def food_eaten(self):
-        y, x = self.pacman.current_position
-        return self.game_box.map_matrix[y][x] == DATA['map_chars']['food']
-
-
-    def ghost_touched(self):
-        for ghost in self.ghosts.values():
-            if ghost.current_position in [self.pacman.current_position, self.prev_position]:
-                return True
-        return False
+    def die(self):
+        self.lives -= 1
+        self.game_box.update_lives(self.lives)
+        self.pacman.die()
 
 
     def increment_score(self, score_type):
@@ -193,6 +185,58 @@ class PacmanGame():
 
         for idx, ghost in enumerate(self.ghosts.values()):
             ghost.set_position(ghost_pos[idx])
+
+
+    def food_eaten(self):
+        y, x = self.pacman.current_position
+        return self.game_box.map_matrix[y][x] == DATA['map_chars']['food']
+
+
+    def ghost_touched(self):
+        for ghost in self.ghosts.values():
+            if ghost.current_position in (self.pacman.current_position,
+                                          self.prev_position):
+                return True
+        return False
+
+
+    def show_start_screen(self):
+        blink_line_index = 0
+        mesg_line = '|                 Press any key to START                  |'
+        blank_line = '|                                                         |'
+
+
+        with open('screens/start.txt') as map_file:
+            line_index = 0
+            for line in map_file:
+                if 'Press' in line:
+                    blink_line_index = line_index
+                self.game_box.map_box.addstr(
+                    line_index,
+                    0,
+                    line,
+                    COLOR.blue if '█' in line else COLOR.yellow
+                )
+                line_index += 1
+
+        self.game_box.border_box.refresh()
+
+        start_screen_running = True
+        show_msg = False
+
+        while start_screen_running:
+            next_key = self.game_box.map_box.getch()
+            self.game_box.map_box.addstr(
+                blink_line_index,
+                0,
+                mesg_line if show_msg else blank_line,
+                COLOR.yellow
+            )
+            show_msg = not show_msg
+            if next_key != -1:
+                start_screen_running = False
+                self.start()
+            time.sleep(0.5)
 
 
 PacmanGame()

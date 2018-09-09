@@ -19,7 +19,6 @@ class GameBox:
 
         self.init_map_matrix(map_file)
         self.init_map_box()
-        self.draw_map()
         self.init_directions()
         self.init_movements()
 
@@ -65,6 +64,7 @@ class GameBox:
         self.border_box.box()
 
 
+    # To be called explicitly
     def draw_map(self):
         color = self.colors['wall']
 
